@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Support — 3D Print Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <style>
+    /* Minimal inline styles to ensure page is visible even if external CSS fails */
+    .support-page .container{max-width:760px}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">3D Print Studio</a></div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="index.html#benefits">Why</a>
+        <a href="support.html">Support</a>
+        <a href="index.html#portfolio">Portfolio</a>
+        <a href="index.html#reviews">Отзывы</a>
+        <a href="index.html" class="cta-small">Home</a>
+      </nav>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme" aria-pressed="false">🌙</button>
+    </div>
+  </header>
+
+  <main class="support-page">
+    <div class="container">
+      <!-- Debug banner removed per request -->
+
+      <h1>Support</h1>
+      <p class="muted">Need help with files, uploads or orders? Submit this form and we'll get back to you.</p>
+
+      <form id="supportForm" class="support-form" novalidate>
+        <label for="s_name">Your name</label>
+        <input id="s_name" name="name" type="text" required>
+
+        <label for="s_email">Email</label>
+        <input id="s_email" name="email" type="email" required>
+
+        <label for="s_message">Message</label>
+        <textarea id="s_message" name="message" rows="5" placeholder="Describe the issue or provide details"></textarea>
+
+        <button type="submit" class="cta-button">Send</button>
+      </form>
+
+      <div id="supportResult" class="order-confirmation" role="status" aria-live="polite" hidden></div>
+
+      <p class="small muted" style="margin-top:18px">Prefer email? <a href="mailto:info@3dprintstudio.example">info@3dprintstudio.example</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 3D Print Studio. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Guarded support script: minimal and defensive to avoid breaking the page
+    (function(){
+      try{
+        console.log('support page script start');
+        // ensure entrance animations don't keep the content hidden on this standalone page
+        try{ document.body.classList.add('page-loaded'); }catch(e){}
+        const form = document.getElementById('supportForm');
+        const result = document.getElementById('supportResult');
+        const savedCount = document.getElementById('savedCount');
+
+        function saveRequest(req){
+          try{
+            const KEY = 'ff_support_v1';
+            const raw = localStorage.getItem(KEY); const arr = raw ? JSON.parse(raw) : [];
+            arr.push(req); localStorage.setItem(KEY, JSON.stringify(arr));
+            try{ if(savedCount) savedCount.textContent = arr.length; }catch(e){}
+          }catch(e){ console.warn('saveRequest failed', e); }
+        }
+
+        function showConfirmation(id, email){
+          result.hidden = false;
+          result.innerHTML = `<p><strong>Thanks — request saved.</strong></p><p class="small">ID: <strong>${id}</strong></p><p class="small">We will contact you at <strong>${email}</strong>.</p>`;
+          form.style.display = 'none';
+        }
+
+        if(form){
+          form.addEventListener('submit', function(e){
+            e.preventDefault();
+            const name = document.getElementById('s_name').value.trim();
+            const email = document.getElementById('s_email').value.trim();
+            const message = document.getElementById('s_message').value.trim();
+            if(!name || !email){ result.hidden = false; result.innerHTML = '<p class="small">Please provide name and email.</p>'; return; }
+            const id = 'SUP-'+Date.now().toString(36).slice(-6).toUpperCase();
+            const item = {id,name,email,message,date:Date.now()};
+            saveRequest(item);
+            showConfirmation(id,email);
+          });
+        }
+        // show initial saved count
+        try{ const raw = localStorage.getItem('ff_support_v1'); const arr = raw ? JSON.parse(raw) : []; if(savedCount) savedCount.textContent = arr.length; }catch(e){}
+
+      }catch(err){
+        // Keep the page visible and show error message in the result area rather than a debug banner
+        try{ if(result){ result.hidden = false; result.innerHTML = '<p class="small">Support: an error occurred — check console.</p>'; } }catch(e){}
+        console.error('Support script error', err);
+      }
+    })();
+  </script>
+</body>
+</html>

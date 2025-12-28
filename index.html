@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Printing Landing Page</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <!-- Decorative animated background (non-interactive) -->
+  <div class="page-bg" aria-hidden="true">
+    <div class="bg-gradient"></div>
+    <div class="bg-particles">
+      <span class="p" style="--i:0;  --x:6%;  --y:18%;  --s:1.0;"></span>
+      <span class="p" style="--i:1;  --x:18%; --y:8%;   --s:0.8;"></span>
+      <span class="p" style="--i:2;  --x:30%; --y:22%;  --s:1.1;"></span>
+      <span class="p" style="--i:3;  --x:44%; --y:12%;  --s:0.7;"></span>
+      <span class="p" style="--i:4;  --x:60%; --y:26%;  --s:0.9;"></span>
+      <span class="p" style="--i:5;  --x:72%; --y:6%;   --s:0.6;"></span>
+      <span class="p" style="--i:6;  --x:84%; --y:20%;  --s:1.3;"></span>
+      <span class="p" style="--i:7;  --x:88%; --y:52%;  --s:0.9;"></span>
+      <span class="p" style="--i:8;  --x:67%; --y:74%;  --s:0.7;"></span>
+      <span class="p" style="--i:9;  --x:52%; --y:86%;  --s:1.0;"></span>
+      <span class="p" style="--i:10; --x:36%; --y:72%;  --s:0.75;"></span>
+      <span class="p" style="--i:11; --x:22%; --y:64%;  --s:0.85;"></span>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo">3D Print Studio</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#benefits">Why</a>
+        <a href="support.html">Support</a>
+        <a href="#portfolio">Работы</a>
+        <a href="#reviews">Отзывы</a>
+        <a href="order.html" class="cta-small">Order</a>
+      </nav>
+      <button id="navToggle" class="nav-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme" aria-pressed="false">🌙</button>
+    </div>
+  </header>
+  <div class="nav-dim" data-role="nav-dim" aria-hidden="true"></div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container">
+      <h1>Custom 3D-Printed Products Made Just for You</h1>
+      <p>High-quality, durable, and affordable 3D prints for home, office, and business needs.</p>
+      <a href="order.html" class="cta-button">Order Your Print</a>
+    </div>
+  </section>
+
+  <!-- BENEFITS SECTION -->
+  <section id="benefits" class="benefits">
+    <div class="container">
+      <h2>Why Choose 3D Printing?</h2>
+      <div class="benefit-cards">
+        <div class="card">Custom designs tailored to your needs</div>
+        <div class="card">Fast production and delivery</div>
+        <div class="card">Strong and eco-friendly materials</div>
+        <div class="card">Affordable for small batches</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support section removed per request — Support link in nav opens email -->
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2>How It Works</h2>
+      <ol>
+        <li>Send your idea or 3D model</li>
+        <li>We print and quality-check</li>
+        <li>You receive your custom product</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO / WORKS -->
+  <section class="portfolio" id="portfolio">
+    <div class="container">
+      <h2>Наши работы</h2>
+      <p class="muted">Примеры изделий, которые мы печатали и обрабатывали.</p>
+
+      <div class="portfolio-grid">
+        <article class="work-card" tabindex="0">
+          <picture>
+            <source srcset="/images/5a8d126c-6258-4015-bcf9-ff34d628e242.png 800w, /images/5a8d126c-6258-4015-bcf9-ff34d628e242-480.png 480w" sizes="(max-width:600px) 90vw, 33vw" type="image/png">
+            <img src="/images/5a8d126c-6258-4015-bcf9-ff34d628e242.png" alt="Custom figurine example" loading="lazy" decoding="async">
+          </picture>
+          <div class="overlay">
+            <h3>Фигурка на заказ</h3>
+            <p>Точная геометрия и постобработка, подходящая для коллекции.</p>
+          </div>
+        </article>
+
+        <article class="work-card" tabindex="0">
+          <picture>
+            <source srcset="" sizes="(max-width:600px) 90vw, 33vw" type="image/png">
+            <img src="/images/ChatGPT Image 27 дек. 2025 г., 15_02_35.png" alt="Phone stand example" loading="lazy" decoding="async">
+          </picture>
+          <div class="overlay">
+            <h3>Подставка для телефона</h3>
+            <p>Удобный дизайн с поддержкой беспроводной зарядки.</p>
+          </div>
+        </article>
+
+        <article class="work-card" tabindex="0">
+          <picture>
+            <source srcset="" sizes="(max-width:600px) 90vw, 33vw" type="image/png">
+            <img src="/images/ChatGPT Image 27 дек. 2025 г., 15_06_50.png" alt="Replacement part example" loading="lazy" decoding="async">
+          </picture>
+          <div class="overlay">
+            <h3>Запчасть для техники</h3>
+            <p>Прочная замена оригинальной детали, изготовленная по точным размерам.</p>
+          </div>
+        </article>
+
+        <article class="work-card" tabindex="0">
+          <picture>
+            <source srcset="/images/b05f6511-19ea-4ed8-9402-ca023c7d5a6b.jpg 800w, /images/b05f6511-19ea-4ed8-9402-ca023c7d5a6b-480.jpg 480w" sizes="(max-width:600px) 90vw, 33vw" type="image/jpeg">
+            <img src="/images/b05f6511-19ea-4ed8-9402-ca023c7d5a6b.jpg" alt="Desk organizer example" loading="lazy" decoding="async">
+          </picture>
+          <div class="overlay">
+            <h3>Органайзер для стола</h3>
+            <p>Компактный и стильный, с продуманной компоновкой для аксессуаров.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta" id="order">
+    <div class="container">
+      <h2>Ready to Bring Your Idea to Life?</h2>
+      <a href="order.html" class="cta-button">Order Your Print Today</a>
+    </div>
+  </section>
+
+  <!-- REVIEWS SECTION -->
+  <section class="reviews" id="reviews">
+    <div class="container">
+      <h2>Отзывы</h2>
+      <p class="muted">Что говорят наши клиенты — реальные отзывы и оценки.</p>
+
+      <div class="reviews-grid" id="reviewsList" aria-live="polite">
+        <!-- Reviews are rendered here by JS -->
+      </div>
+
+      <div class="review-form">
+        <h3>Оставьте отзыв</h3>
+        <form id="reviewForm">
+          <div class="form-row">
+            <input type="text" id="name" name="name" placeholder="Ваше имя" required>
+            <select id="rating" name="rating" aria-label="Rating">
+              <option value="5">5 — Отлично</option>
+              <option value="4">4 — Хорошо</option>
+              <option value="3">3 — Средне</option>
+              <option value="2">2 — Плохо</option>
+              <option value="1">1 — Очень плохо</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <textarea id="message" name="message" rows="4" placeholder="Ваш отзыв" required></textarea>
+          </div>
+          <button type="submit" class="cta-button">Отправить отзыв</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>© 2025 3D Print Studio. All rights reserved.</p>
+    </div>
+  </footer>
+  <section class="contact" id="contact">
+    <div class="container">
+      <h2>Contact</h2>
+      <p class="muted">Email us at <a href="mailto:info@3dprintstudio.example">info@3dprintstudio.example</a> or use the order button.</p>
+    </div>
+  </section>
+  <script src="script.js"></script>
+</body>
+</html>

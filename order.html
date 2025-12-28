@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Place an Order — 3D Print Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">3D Print Studio</a></div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="index.html#benefits">Why</a>
+         <a href="support.html">Support</a>
+        <a href="index.html#portfolio">Portfolio</a>
+        <a href="index.html#reviews">Отзывы</a>
+        <a href="index.html" class="cta-small">Home</a>
+      </nav>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme" aria-pressed="false">🌙</button>
+    </div>
+  </header>
+
+  <main class="order-page">
+    <div class="container">
+      <h1>Place an Order</h1>
+      <p class="muted">Fill out the form below and we'll contact you to confirm details and delivery.</p>
+
+      <form id="orderForm" class="order-form" novalidate>
+        <label for="o_name">Your name</label>
+        <input id="o_name" name="name" type="text" required>
+
+        <label for="o_email">Email</label>
+        <input id="o_email" name="email" type="email" required>
+
+        <label for="o_address">Shipping address</label>
+        <input id="o_address" name="address" type="text" placeholder="Street, city, postal code, country" required>
+
+        <label for="o_model">3D Model File</label>
+        <input id="o_model" name="model" type="file" accept=".stl,.obj,.step,.stpz,.3mf,.zip,.rar" required>
+        <div id="modelPreview" class="small muted">Поддерживаемые форматы: <strong>.stl, .obj, .step, .3mf, .zip</strong>. Максимум ~25 MB — большие файлы мы попросим загрузить отдельно после подтверждения.</div>
+
+        <label for="o_quantity">Quantity <span class="small">(min 1)</span></label>
+        <input id="o_quantity" name="quantity" type="number" min="1" value="1" required>
+
+        <label for="o_notes">Notes / Details</label>
+        <textarea id="o_notes" name="notes" rows="4" placeholder="Tell us about materials, colors, measurements, or attach a model when we contact you."></textarea>
+
+        <button type="submit" class="cta-button">Submit Order</button>
+      </form>
+
+      <div id="orderResult" class="order-confirmation" role="status" aria-live="polite" hidden></div>
+
+      <p style="margin-top:18px"><a href="index.html">← Back to home</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 3D Print Studio. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    (function(){
+      const STORAGE_KEY = 'ff_orders_v1';
+      const form = document.getElementById('orderForm');
+      const result = document.getElementById('orderResult');
+
+      function loadOrders(){
+        try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }catch(e){return []}
+      }
+      function saveOrders(arr){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }catch(e){}
+      }
+
+      function genOrderId(){ return 'ORD-'+Date.now().toString(36).slice(-6).toUpperCase(); }
+
+      function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+      function showConfirmation(order){
+        result.hidden = false;
+        let modelLine = '';
+        let addressLine = '';
+        if(order.modelName){
+          modelLine = `<p class="small">Файл модели: <strong>${escapeHtml(order.modelName)}</strong> (${Math.round((order.modelSize||0)/1024)} KB)` + (order.largeFile ? ' — файл большой, мы пришлём инструкцию по загрузке.' : ' — файл сохранён.') + '</p>';
+        }
+        if(order.address){ addressLine = `<p class="small">Адрес доставки: <strong>${escapeHtml(order.address)}</strong></p>`; }
+        result.innerHTML = `
+          <p><strong>Спасибо! Ваш заказ принят.</strong></p>
+          <p>Номер заказа: <strong>${order.id}</strong></p>
+          ${modelLine}
+          ${addressLine}
+          <p class="small">Мы свяжемся с вами по <strong>${order.email}</strong> чтобы подтвердить детали.</p>
+        `;
+        form.style.display = 'none';
+      }
+
+      function prefillFromQuery(){
+        try{
+          const params = new URLSearchParams(location.search);
+          const p = params.get('product');
+          if(p){
+            const notesEl = document.getElementById('o_notes');
+            notesEl.value = (notesEl.value ? notesEl.value + '\n' : '') + 'Requested product: ' + p;
+            const preview = document.getElementById('modelPreview');
+            preview.innerHTML += `<br><span class="small muted">Requested: <strong>${p}</strong></span>`;
+          }
+        }catch(e){}
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        prefillFromQuery();
+        if(!form) return;
+
+        const modelInput = document.getElementById('o_model');
+        const MAX_UPLOAD = 25 * 1024 * 1024; // 25MB
+        const INLINE_MAX = 3 * 1024 * 1024; // 3MB
+        const ALLOWED = ['stl','obj','step','3mf','zip','stpz','rar'];
+
+        // file input preview
+        if(modelInput){
+          modelInput.addEventListener('change', function(){
+            const p = document.getElementById('modelPreview');
+            if(!this.files || this.files.length === 0){ p.innerHTML = 'Файл не выбран.'; return; }
+            const f = this.files[0];
+            const kb = Math.round(f.size/1024);
+            p.innerHTML = `<strong>${escapeHtml(f.name)}</strong> — ${kb} KB (${f.type || 'n/a'})`;
+            if(f.size > INLINE_MAX) p.innerHTML += '<br><span class="small muted">Файл большой; мы можем попросить загрузить его отдельно после подтверждения.</span>';
+          });
+        }
+
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          const name = document.getElementById('o_name').value.trim();
+          const email = document.getElementById('o_email').value.trim();
+          const address = document.getElementById('o_address').value.trim();
+          const quantity = parseInt(document.getElementById('o_quantity').value,10) || 1;
+          const notes = document.getElementById('o_notes').value.trim();
+          if(!name || !email || !address){
+            result.hidden = false;
+            result.innerHTML = '<p class="small">Пожалуйста, заполните обязательные поля (имя, email, адрес доставки).</p>';
+            return;
+          }
+          if(!modelInput || !modelInput.files || modelInput.files.length === 0){
+            result.hidden = false;
+            result.innerHTML = '<p class="small">Пожалуйста, прикрепите файл 3D-модели (.stl, .obj, .3mf, .zip и т.д.).</p>';
+            return;
+          }
+
+          const file = modelInput.files[0];
+          const nameParts = (file.name || '').split('.');
+          const ext = nameParts.length>1 ? nameParts.pop().toLowerCase() : '';
+          if(ext && ALLOWED.indexOf(ext) === -1){
+            result.hidden = false;
+            result.innerHTML = `<p class="small">Неподдерживаемый формат файла: .${ext}. Поддерживаются: ${ALLOWED.join(', ')}.</p>`;
+            return;
+          }
+          if(file.size > MAX_UPLOAD){
+            result.hidden = false;
+            result.innerHTML = '<p class="small">Файл слишком большой (больше 25 MB). Пожалуйста, свяжитесь с нами напрямую, и мы подготовим способ загрузки.</p>';
+            return;
+          }
+
+          function finalizeOrder(payload){
+            const order = Object.assign({ id: genOrderId(), name, email, address, quantity, notes, date: Date.now() }, payload);
+            const orders = loadOrders(); orders.push(order); saveOrders(orders);
+            showConfirmation(order);
+          }
+
+          if(file.size <= INLINE_MAX){
+            const reader = new FileReader();
+            reader.onload = function(ev){
+              const data = ev.target.result;
+              finalizeOrder({ modelName: file.name, modelType: file.type, modelSize: file.size, modelData: data });
+            };
+            reader.onerror = function(){ finalizeOrder({ modelName: file.name, modelType: file.type, modelSize: file.size, largeFile: false }); };
+            reader.readAsDataURL(file);
+          }else{
+            finalizeOrder({ modelName: file.name, modelType: file.type, modelSize: file.size, largeFile: true });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
